@@ -2,14 +2,13 @@ import express from "express";
 import bodyParser from "body-parser";
 import pg from "pg";
 import env from "dotenv";
-import bcrypt from "bcrypt";
+import argon2 from "argon2";
 import session from "express-session";
 import passport from "passport"
 import { Strategy } from "passport-local";
 
 const app = express();
 const port = 5000;
-const saltRounds = 10;
 env.config();
 
 const db = new pg.Client({
@@ -44,41 +43,35 @@ app.get("/api", (req, res) => {
 });
 
 app.post("/signup", async (req, res) => {
-  bcrypt.hash(req.body.password, saltRounds, async (err, hash) => {
-    if (err) {
-      console.log(err);
-    } else {
-      const hashedPassword = hash;
-      try {
-        await db.query("INSERT INTO users VALUES (($1), ($2), ($3), ($4))",
-          [req.body.username, hashedPassword, req.body.name, req.body.email]
-        );
-        console.log("Created new user.");
-        req.login(req.body.username, (err) => {
-          if (err) {
-            console.log(err);
-            res.json({
-            success: false,
-            message: "Error logging in to new user."
-          })
-          }
-          res.json({
-            success: true,
-            message: "Created new user."
-          })
-        })
-      } catch (err) {
-        console.log("Username already in use, please use a different one.");
+  const hashedPassword = await argon2.hash(req.body.password);
+  try {
+    await db.query("INSERT INTO users VALUES (($1), ($2), ($3), ($4))",
+      [req.body.username, hashedPassword, req.body.name, req.body.email]
+    );
+    console.log("Created new user.");
+    req.login(req.body.username, (err) => {
+      if (err) {
+        console.log(err);
         res.json({
-          success: false,
-          message: "Username already in use, please use a different one."
-        })
+        success: false,
+        message: "Error logging in to new user."
+      })
       }
-    }
-  })
+      res.json({
+        success: true,
+        message: "Created new user."
+      })
+    })
+  } catch (err) {
+    console.log("Username already in use, please use a different one.");
+    res.json({
+      success: false,
+      message: "Username already in use, please use a different one."
+    })
+  }
 });
 
-app.post('/login', function(req, res, next) {
+app.post("/login", function(req, res, next) {
   passport.authenticate('local', function(err, user) {
     if (err) { return next(err)}
     if (!user) { 
@@ -114,18 +107,12 @@ passport.use(
       );
       if (result.rows.length > 0) {
         const hashedPassword = result.rows[0].password;
-        bcrypt.compare(password, hashedPassword, async (err, result) => {
-          if (err) {
-            return cb(err);
-          } else { 
-            if (result) {
-              return cb(null, username);
-            } else {
-              console.log("Password incorrect.");
-              return cb(null, false)
-            }
-          }
-        })
+        if (await argon2.verify(hashedPassword, password)) {
+          return cb(null, username);
+        } else {
+          console.log("Password incorrect.");
+          return cb(null, false)
+        }
       } else {
         console.log("No user found.");
         return cb(null, false);
