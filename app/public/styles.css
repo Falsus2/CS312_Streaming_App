@@ -1,3 +1,9 @@
 html {
     background-color: aquamarine;
 }
+
+/* Bootstrap makes body have a white background for some reason */
+
+body {
+    background-color: transparent;
+}

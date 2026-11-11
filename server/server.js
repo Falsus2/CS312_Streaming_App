@@ -36,11 +36,21 @@ app.use(express.json());
 app.use(passport.initialize());
 app.use(passport.session());
 
+// Middleware to ensure authentication for future routes
+
+function reqAuth(req, res, next) {
+  if (req.isAuthenticated()) return next();
+  res.sendStatus(401);
+  console.log("Access denied.")
+}
+
 // Routes start here
 
 app.get("/api", (req, res) => {
   res.json({ message: "From server" });
 });
+
+// Account functionality
 
 app.post("/signup", async (req, res) => {
   const hashedPassword = await argon2.hash(req.body.password);
@@ -53,9 +63,9 @@ app.post("/signup", async (req, res) => {
       if (err) {
         console.log(err);
         res.json({
-        success: false,
-        message: "Error logging in to new user."
-      })
+          success: false,
+          message: "Error logging in to new user."
+        })
       }
       res.json({
         success: true,
@@ -76,17 +86,18 @@ app.post("/login", function(req, res, next) {
     if (err) { return next(err)}
     if (!user) { 
       return res.json({
-      success: false,
-      message: "Username or password incorrect",
-    })}
+        success: false,
+        message: "Username or password incorrect",
+      })
+    }
 
     req.login(user, (err) => {
       if (err) {
         console.log(err);
         return res.json({
-        success: false,
-        message: "Error logging in."
-      })
+          success: false,
+          message: "Error logging in."
+        })
       }
       res.json({
         success: true,
@@ -97,7 +108,14 @@ app.post("/login", function(req, res, next) {
   })(req, res, next);
 });
 
-// End
+app.get("/session", async (req, res) => {
+  res.json({
+    isAuthenticated: req.isAuthenticated(),
+    user: req.user || null
+  });
+});
+
+// End routes
 
 passport.use(
   new Strategy(async function verify(username, password, cb) {
