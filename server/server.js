@@ -2,6 +2,7 @@ import express from "express";
 import bodyParser from "body-parser";
 import pg from "pg";
 import env from "dotenv";
+import axios from "axios";
 import argon2 from "argon2";
 import session from "express-session";
 import passport from "passport"
@@ -44,10 +45,109 @@ function reqAuth(req, res, next) {
   console.log("Access denied.")
 }
 
-// Routes start here
+// --------- Routes start here --------- //
 
 app.get("/api", (req, res) => {
   res.json({ message: "From server" });
+});
+
+// TMDB Routes
+
+app.get("/api/movies/popular", async (req, res) => {
+  // POPULAR MOVIES
+  try {
+    const response = await axios.get(
+    "https://api.themoviedb.org/3/movie/popular", {
+      params: {
+        api_key: process.env.TMDB_API_KEY
+      }
+    }
+  );
+
+  const popularMovies = response.data;
+
+  res.json(popularMovies);
+
+  } catch (error) {
+    
+    res.status(500).json({
+      message: "Failed to retrieve popular movies!"
+    });
+    console.error("Error fetching popular movies.", error);
+  }
+  
+});
+
+app.get("/api/tv/popular", async(req, res) => {
+   // POPULAR TV
+  try {
+    const response = await axios.get(
+    "https://api.themoviedb.org/3/tv/popular", {
+      params: {
+        api_key: process.env.TMDB_API_KEY
+      }
+    }
+  );
+
+  const popularTv = response.data;
+
+  res.json(popularTv);
+
+  } catch (error) {
+    
+    res.status(500).json({
+      message: "Failed to retrieve popular TV shows!"
+    });
+    console.error("Error fetching popular TV.", error);
+  }
+});
+
+app.get("/api/movies/trending", async (req, res) => {
+  // TRENDING MOVIES FOR THE WEEK
+  try {
+    const response = await axios.get(
+      "https://api.themoviedb.org/3/trending/movie/week", {
+        params: {
+          api_key: process.env.TMDB_API_KEY
+        }
+      }
+    );
+
+    const trendingMovies = response.data;
+
+    res.json(trendingMovies);
+
+  } catch (error) {
+    res.status(500).json({
+      message: "Failed to retrieve trending movies!"
+    });
+
+    console.error("Error fetching trending movies.", error);
+  }
+});
+
+app.get("/api/tv/trending", async (req, res) => {
+  // TRENDING TV FOR THE WEEK
+  try {
+    const response = await axios.get(
+      "https://api.themoviedb.org/3/trending/tv/week", {
+        params: {
+          api_key: process.env.TMDB_API_KEY
+        }
+      }
+    );
+
+    const trendingTv = response.data;
+
+    res.json(trendingTv);
+
+  } catch (error) {
+    res.status(500).json({
+      message: "Failed to retrieve trending TV!"
+    });
+
+    console.error("Error fetching trending TV.", error);
+  }
 });
 
 // Account functionality
