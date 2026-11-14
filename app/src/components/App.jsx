@@ -2,10 +2,11 @@ import React, {useEffect, useState} from "react";
 import axios from "axios";
 import TestFormSignIn from "./TestFormSignin"
 import TestFormSignup from "./TestFormSignup"
+import MediaData from "./MediaData";
 
 
 function App() {
-
+  
   const [backendData, setBackendData] = useState([{}])
 
   const fetchData = async () => {
@@ -42,7 +43,27 @@ function App() {
           <p>User: {auth.user}</p>
         </div>
       )}
+
+
+      <MediaData
+        title="Popular Movies" 
+        endpoint="/api/movies/popular"
+      />
+      <MediaData
+        title="Popular TV" 
+        endpoint="/api/tv/popular"
+      />
+      <MediaData
+        title="Trending Movies This Week!"
+        endpoint="/api/movies/trending"
+      />
+
+      <MediaData 
+        title="Trending TV This Week!"
+        endpoint="/api/tv/trending"
+      />
       
+
     </div>
   )
 }
