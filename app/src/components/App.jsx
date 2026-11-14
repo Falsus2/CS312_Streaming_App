@@ -2,62 +2,10 @@ import React, {useEffect, useState} from "react";
 import axios from "axios";
 import TestFormSignIn from "./TestFormSignin"
 import TestFormSignup from "./TestFormSignup"
-import MediaList from "./MediaList"
+import MediaData from "./MediaData";
 
 
 function App() {
-  
-  // FETCHING MOVIE AND TV DETAILS
-
-  const [popularMovies, setPopularMovies] = useState([]);
-  const [popularTv, setPopularTV] = useState([]);
-  const [trendingMovies, setTrendingMovies] = useState([]);
-  const [trendingTV, setTrendingTV] = useState([]);
-
-  const fetchPopularMovies = async () => {
-    
-    try{
-      const response = await axios.get("/api/movies/popular");
-      setPopularMovies(response.data.results);
-    } catch (error) {
-      console.log(error);
-    }
-    
-  }
-
-  const fetchPopularTV = async () => {
-
-    try {
-      const response = await axios.get("/api/tv/popular");
-      setPopularTV(response.data.results);
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
-  const fetchTrendingMovies = async () => {
-
-    try {
-      const response = await axios.get("/api/movies/trending");
-      setTrendingMovies(response.data.results);
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
-  const fetchTrendingTV = async () => {
-
-    try {
-      const response = await axios.get("/api/tv/trending");
-      setTrendingTV(response.data.results);
-    } catch (error) {
-      console.log(error);
-    }
-  }
-
-  
-  
-  
   
   const [backendData, setBackendData] = useState([{}])
 
@@ -80,10 +28,6 @@ function App() {
   useEffect(() => {
     fetchData();
     checkSession();
-    fetchPopularMovies();
-    fetchPopularTV();
-    fetchTrendingTV();
-    fetchTrendingMovies();
   }, [])
 
   return (
@@ -99,16 +43,26 @@ function App() {
           <p>User: {auth.user}</p>
         </div>
       )}
+
+
+      <MediaData
+        title="Popular Movies" 
+        endpoint="/api/movies/popular"
+      />
+      <MediaData
+        title="Popular TV" 
+        endpoint="/api/tv/popular"
+      />
+      <MediaData
+        title="Trending Movies This Week!"
+        endpoint="/api/movies/trending"
+      />
+
+      <MediaData 
+        title="Trending TV This Week!"
+        endpoint="/api/tv/trending"
+      />
       
-      <h2>Popular Movies</h2>
-      <MediaList mediaItems={popularMovies}/>
-      <h2>Popular TV</h2>
-      <MediaList mediaItems={popularTv}/>
-      
-      <h2>Trending Movies This Week!</h2>
-      <MediaList mediaItems={trendingMovies}/>
-      <h2>Trending TV This Week!</h2>
-      <MediaList mediaItems={trendingTV}/>
 
     </div>
   )
