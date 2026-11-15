@@ -1,3 +1,8 @@
+* {
+    box-sizing: inherit;
+    color:beige; 
+}
+
 html {
     background-color: aquamarine;
 }
@@ -5,5 +10,23 @@ html {
 /* Bootstrap makes body have a white background for some reason */
 
 body {
-    background-color: transparent;
+    background-color: darkslategrey !important;
 }
+
+.flex-container{
+    display: flex;
+}
+
+.main{
+    width: 100%;
+}
+
+.sideBarDiv{
+    width: 10rem !important;
+    color: white !important;
+}
+
+.footer{
+    background-color: #363535;
+}
+
