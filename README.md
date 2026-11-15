@@ -69,8 +69,7 @@ With so many streaming services, it's hard to find high-quality films and shows 
 
    - `SESSION_SECRET`: a long, random string used to sign session cookies
    - `DB_PASSWORD`: the password for your local PostgreSQL user
-
-   A `TMDB_API_KEY` variable will be added once the API integration is implemented.
+   - `TMDB_API_KEY`: The api key you get from subscribing to TMDB here: https://www.themoviedb.org/ 
 
    > Never commit your `.env` file. Make sure it is listed in `.gitignore`.
 
