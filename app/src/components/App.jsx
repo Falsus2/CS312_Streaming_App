@@ -34,6 +34,8 @@ function App() {
     checkSession();
   }, [])
 
+  const [movieSearch, setMovieSearch] = useState();
+
   return (
     <div className="d-flex">
       <Sidebar />

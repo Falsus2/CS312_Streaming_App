@@ -150,6 +150,29 @@ app.get("/api/tv/trending", async (req, res) => {
   }
 });
 
+app.get("/api/search", async (req, res) => {
+  // SEARCH FOR A MOVIE OR TV SHOW
+  console.log(req.query.keyword);
+  try{
+    const response = await axios.get(
+      'https://api.themoviedb.org/3/search/multi', {
+        params: {
+          query: req.query.keyword,
+          api_key: process.env.TMDB_API_KEY
+        }
+      }
+    )
+    
+    const searchResults = response.data.results.filter(object => object.media_type !== "person");
+    res.json(searchResults);
+  }
+  catch (error) {
+    res.status(500).json({
+      message: "Failed to complete a search!"
+    });
+    console.error("Error searching for media.", error);
+  }
+});
 // Account functionality
 
 app.post("/signup", async (req, res) => {
