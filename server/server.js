@@ -57,44 +57,35 @@ app.get("/api/movies/popular", async (req, res) => {
   // POPULAR MOVIES
   try {
     const response = await axios.get(
-    "https://api.themoviedb.org/3/movie/popular", {
-      params: {
-        api_key: process.env.TMDB_API_KEY
+      "https://api.themoviedb.org/3/movie/popular", {
+        params: {
+          api_key: process.env.TMDB_API_KEY
+        }
       }
-    }
-  );
-
+    );
   const popularMovies = response.data;
-
   res.json(popularMovies);
-
   } catch (error) {
-    
     res.status(500).json({
       message: "Failed to retrieve popular movies!"
     });
     console.error("Error fetching popular movies.", error);
   }
-  
 });
 
 app.get("/api/tv/popular", async(req, res) => {
    // POPULAR TV
   try {
     const response = await axios.get(
-    "https://api.themoviedb.org/3/tv/popular", {
-      params: {
-        api_key: process.env.TMDB_API_KEY
+      "https://api.themoviedb.org/3/tv/popular", {
+        params: {
+          api_key: process.env.TMDB_API_KEY
+        }
       }
-    }
-  );
-
-  const popularTv = response.data;
-
-  res.json(popularTv);
-
+    );
+    const popularTv = response.data;
+    res.json(popularTv);
   } catch (error) {
-    
     res.status(500).json({
       message: "Failed to retrieve popular TV shows!"
     });
@@ -112,16 +103,12 @@ app.get("/api/movies/trending", async (req, res) => {
         }
       }
     );
-
     const trendingMovies = response.data;
-
     res.json(trendingMovies);
-
   } catch (error) {
     res.status(500).json({
       message: "Failed to retrieve trending movies!"
     });
-
     console.error("Error fetching trending movies.", error);
   }
 });
@@ -136,37 +123,31 @@ app.get("/api/tv/trending", async (req, res) => {
         }
       }
     );
-
     const trendingTv = response.data;
-
     res.json(trendingTv);
-
   } catch (error) {
     res.status(500).json({
       message: "Failed to retrieve trending TV!"
     });
-
     console.error("Error fetching trending TV.", error);
   }
 });
 
-app.get("/api/search", async (req, res) => {
+app.post("/api/search", async (req, res) => {
   // SEARCH FOR A MOVIE OR TV SHOW
   console.log(req.query.keyword);
   try{
     const response = await axios.get(
-      'https://api.themoviedb.org/3/search/multi', {
+      "https://api.themoviedb.org/3/search/multi", {
         params: {
           query: req.query.keyword,
           api_key: process.env.TMDB_API_KEY
         }
       }
-    )
-    
+    );
     const searchResults = response.data.results.filter(object => object.media_type !== "person");
     res.json(searchResults);
-  }
-  catch (error) {
+  } catch (error) {
     res.status(500).json({
       message: "Failed to complete a search!"
     });
@@ -213,7 +194,6 @@ app.post("/login", function(req, res, next) {
         message: "Username or password incorrect",
       })
     }
-
     req.login(user, (err) => {
       if (err) {
         console.log(err);

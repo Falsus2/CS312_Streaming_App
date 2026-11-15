@@ -31,7 +31,7 @@ With so many streaming services, it's hard to find high-quality films and shows 
 
 - [Node.js](https://nodejs.org/)
 - [PostgreSQL](https://www.postgresql.org/) (running locally)
-- A free [TMDB API key](https://www.themoviedb.org/settings/api) (needed once the TMDB integration is added)
+- A free [TMDB API key](https://www.themoviedb.org/settings/api)
 
 ### Installation
 
@@ -65,11 +65,12 @@ With so many streaming services, it's hard to find high-quality films and shows 
    ```env
    SESSION_SECRET=""
    DB_PASSWORD=""
+   TMDB_API_KEY=""
    ```
 
    - `SESSION_SECRET`: a long, random string used to sign session cookies
    - `DB_PASSWORD`: the password for your local PostgreSQL user
-   - `TMDB_API_KEY`: The api key you get from subscribing to TMDB here: https://www.themoviedb.org/ 
+   - `TMDB_API_KEY`: a free [TMDB API key](https://www.themoviedb.org/settings/api)
 
    > Never commit your `.env` file. Make sure it is listed in `.gitignore`.
 
