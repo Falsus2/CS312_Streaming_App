@@ -11,13 +11,6 @@ import SearchMediaData from "./SearchMediaData";
 import LoadingSpinner from "./LoadingSpinner";
 
 function App() {
-  
-  const [backendData, setBackendData] = useState([{}])
-
-  const fetchData = async () => {
-    const response = await axios.get("/api");
-    setBackendData(response.data);
-  }
 
   const [auth, setAuth] = useState({});
   
@@ -31,7 +24,6 @@ function App() {
   }
 
   useEffect(() => {
-    fetchData();
     checkSession();
   }, [])
 
@@ -67,14 +59,6 @@ function App() {
           <TestFormSignup startSession={checkSession}/> */}
           <NavigationBar searchClick={handleSearchClick} removeSearch={() => {setIsRenderSearch(false)}}/>
           
-          {(typeof backendData.message === 'undefined') ? (
-            <LoadingSpinner />
-          ): (
-            <div>
-              <h1>{backendData.message}</h1>
-              <p>User: {auth.user}</p>
-            </div>
-          )}
           <div className="d-flex">
             {(isRenderSearch) ?
               (<SearchMediaData

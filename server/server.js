@@ -46,11 +46,6 @@ function reqAuth(req, res, next) {
 }
 
 // --------- Routes start here --------- //
-
-app.get("/api", (req, res) => {
-  res.json({ message: "From server" });
-});
-
 // TMDB Routes
 
 app.get("/api/movies/popular", async (req, res) => {
@@ -136,7 +131,7 @@ app.get("/api/tv/trending", async (req, res) => {
 app.get("/api/search", async (req, res) => {
   // SEARCH FOR A MOVIE OR TV SHOW
   console.log(req.query.keyword);
-  try{
+  try {
     const response = await axios.get(
       "https://api.themoviedb.org/3/search/multi", {
         params: {
@@ -154,6 +149,7 @@ app.get("/api/search", async (req, res) => {
     console.error("Error searching for media.", error);
   }
 });
+
 // Account functionality
 
 app.post("/signup", async (req, res) => {
