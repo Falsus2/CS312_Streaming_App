@@ -7,7 +7,7 @@ import MediaData from "./MediaData";
 import NavigationBar from "./NavigationBar";
 import Footer from "./Footer";
 import Sidebar from "./Sidebar";
-
+import SearchMediaData from "./SearchMediaData";
 
 function App() {
   
@@ -35,6 +35,27 @@ function App() {
   }, [])
 
   const [movieSearch, setMovieSearch] = useState();
+  const [isRenderSearch, setIsRenderSearch] = useState(false);
+  const [movieArray, setMovieArray] = useState([{}]);
+
+  async function handleSearchClick (event){
+    event.preventDefault();
+
+    setMovieSearch(event.target.searchInput.value);
+    try{
+      const response = await axios.get("/api/search", {
+          params: {
+            keyword: movieSearch
+          }
+      })
+      const result = response.data;
+      setMovieArray(result);
+      setIsRenderSearch(true);
+    }
+    catch (err){
+      console.log(err);
+    }
+  }
 
   return (
     <div className="d-flex">
@@ -43,7 +64,7 @@ function App() {
         <main className = "flex-shrink-0">
           {/* <TestFormSignIn startSession={checkSession}/>
           <TestFormSignup startSession={checkSession}/> */}
-          <NavigationBar />
+          <NavigationBar searchClick={handleSearchClick} removeSearch={() => {setIsRenderSearch(false)}}/>
           
           {(typeof backendData.message === 'undefined') ? (
             <h1>Loading...</h1>
@@ -53,7 +74,13 @@ function App() {
               <p>User: {auth.user}</p>
             </div>
           )}
-
+          
+          {(isRenderSearch) ?
+            (<SearchMediaData
+            title="Search Results"
+            movieArray={movieArray}
+            />) : (null)
+          }
           
           <MediaData
             title="Popular Movies" 

@@ -26,7 +26,6 @@ function MediaData({title, endpoint}) {
 
         fetchMediaData()
     }, [endpoint]);
-
     return(
         <section>
             <h2>{title}</h2>
