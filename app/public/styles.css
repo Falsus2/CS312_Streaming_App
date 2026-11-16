@@ -1,6 +1,6 @@
 * {
     box-sizing: inherit;
-    color:beige; 
+    color:beige !important; 
 }
 
 html {
@@ -32,4 +32,12 @@ body {
 
 .sideBarDiv{
     padding: 1rem;
+}
+
+.mediaCard{
+    background-color: #363535;
+}
+
+.media-list{
+    margin: 10px;
 }

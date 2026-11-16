@@ -8,6 +8,7 @@ import NavigationBar from "./NavigationBar";
 import Footer from "./Footer";
 import Sidebar from "./Sidebar";
 import SearchMediaData from "./SearchMediaData";
+import LoadingSpinner from "./LoadingSpinner";
 
 function App() {
   
@@ -67,38 +68,40 @@ function App() {
           <NavigationBar searchClick={handleSearchClick} removeSearch={() => {setIsRenderSearch(false)}}/>
           
           {(typeof backendData.message === 'undefined') ? (
-            <h1>Loading...</h1>
+            <LoadingSpinner />
           ): (
             <div>
               <h1>{backendData.message}</h1>
               <p>User: {auth.user}</p>
             </div>
           )}
-          
-          {(isRenderSearch) ?
-            (<SearchMediaData
-            title="Search Results"
-            movieArray={movieArray}
-            />) : (null)
-          }
-          
-          <MediaData
-            title="Popular Movies" 
-            endpoint="/api/movies/popular"
-          />
-          <MediaData
-            title="Popular TV" 
-            endpoint="/api/tv/popular"
-          />
-          <MediaData
-            title="Trending Movies This Week!"
-            endpoint="/api/movies/trending"
-          />
+          <div className="d-flex">
+            {(isRenderSearch) ?
+              (<SearchMediaData
+              title="Search Results"
+              movieArray={movieArray}
+              />) : (null)
+            }
+            
+            <MediaData
+              title="Popular Movies" 
+              endpoint="/api/movies/popular"
+            />
+            
+            <MediaData
+              title="Popular TV" 
+              endpoint="/api/tv/popular"
+            />
+            <MediaData
+              title="Trending Movies This Week!"
+              endpoint="/api/movies/trending"
+            />
 
-          <MediaData 
-            title="Trending TV This Week!"
-            endpoint="/api/tv/trending"
-          />
+            <MediaData 
+              title="Trending TV This Week!"
+              endpoint="/api/tv/trending"
+            />
+          </div>
         </main>
         
         <Footer />
