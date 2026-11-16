@@ -133,7 +133,7 @@ app.get("/api/tv/trending", async (req, res) => {
   }
 });
 
-app.post("/api/search", async (req, res) => {
+app.get("/api/search", async (req, res) => {
   // SEARCH FOR A MOVIE OR TV SHOW
   console.log(req.query.keyword);
   try{

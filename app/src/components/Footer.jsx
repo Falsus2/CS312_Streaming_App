@@ -10,7 +10,7 @@ function Footer(){
                         Movie information credited to TMDB
                     </Col>
                     <Col>
-                            
+                        
                     </Col>
                 </Row>
             </Container>
