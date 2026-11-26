@@ -3,6 +3,7 @@ import axios from "axios";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import TestFormSignIn from "./TestFormSignin";
 import TestFormSignup from "./TestFormSignup";
+import TestFormReview from "./TestFormReview";
 import MediaData from "./MediaData";
 import NavigationBar from "./NavigationBar";
 import Footer from "./Footer";
@@ -31,7 +32,7 @@ function App() {
   const [isRenderSearch, setIsRenderSearch] = useState(false);
   const [movieArray, setMovieArray] = useState([{}]);
 
-  async function handleSearchClick (event){
+  async function handleSearchClick (event) {
     event.preventDefault();
 
     setMovieSearch(event.target.searchInput.value);
@@ -55,8 +56,9 @@ function App() {
       <Sidebar />
       <div className = "d-flex flex-column min-vh-100 main">
         <main className = "flex-shrink-0">
-          {/* <TestFormSignIn startSession={checkSession}/>
-          <TestFormSignup startSession={checkSession}/> */}
+          {/* <TestFormSignIn startSession={checkSession}/> */}
+          {/* <TestFormSignup startSession={checkSession}/> */}
+          {/* <TestFormReview /> */}
           <NavigationBar searchClick={handleSearchClick} removeSearch={() => {setIsRenderSearch(false)}}/>
           
           <div className="d-flex">

@@ -37,12 +37,33 @@ app.use(express.json());
 app.use(passport.initialize());
 app.use(passport.session());
 
-// Middleware to ensure authentication for future routes
+// Middleware to ensure authentication
 
 function reqAuth(req, res, next) {
   if (req.isAuthenticated()) return next();
-  res.sendStatus(401);
-  console.log("Access denied.")
+  res.status(401).json({
+    message: "Access denied."
+  });
+  console.error("Access denied.")
+}
+
+async function reqOwnership(req, res, next) {
+  const id = req.params.id;
+
+  try {
+    const response = await db.query("SELECT * FROM reviews WHERE id = $1",
+      [id]
+    );
+    if (response.rows[0].reviewer_id !== req.user) {
+      console.error("Access denied.");
+      return res.status(403).json({
+        message: "Access denied."
+      });
+    }
+    next();
+  } catch (err) {
+    next(err)
+  }
 }
 
 // --------- Routes start here --------- //
@@ -150,6 +171,86 @@ app.get("/api/search", async (req, res) => {
   }
 });
 
+// Review functionality
+
+app.post("/api/reviews", reqAuth, async (req, res) => {
+  const { tmdb_id, media_type, rating, review } = req.body;
+
+  try {
+    await db.query("INSERT INTO reviews (reviewer_id, tmdb_id, media_type, rating, review) VALUES ($1, $2, $3, $4, $5)",
+      [req.user, tmdb_id, media_type, rating, review]
+    );
+    console.log("Created new review.");
+    res.json({
+      message: "Created new review."
+    });
+  } catch (err) {
+    console.error("Error creating review.", err);
+    res.status(500).json({
+      message: "Failed to create new review."
+    });
+  }
+});
+
+app.patch("/api/reviews/:id", reqAuth, reqOwnership, async (req, res) => {
+  const id = req.params.id;
+  const { rating, review } = req.body;
+
+  try {
+    await db.query("UPDATE reviews SET rating = $1, review = $2 WHERE id = $3",
+      [rating, review, id]
+    );
+    res.json({
+      message: "Successfully edited review."
+    });
+  } catch(err) {
+    console.error("Error editing review with id ", id, err);
+    res.status(500).json({
+      message: "Failed to edit review."
+    });
+  }
+});
+
+app.delete("/api/reviews/:id", reqAuth, reqOwnership, async (req, res) => {
+  const id = req.params.id;
+
+  try {
+    await db.query("DELETE FROM reviews where id = $1",
+      [id]
+    );
+    res.json({
+      message: "Successfully deleted review."
+    });
+  } catch (err) {
+    console.error("Error deleting review with id ", id, err);
+    res.status(500).json({
+      message: "Failed to delete review."
+    });
+  }
+});
+
+app.get("/api/reviews/:mediaType/:tmdbId", async (req, res) => {
+  const { mediaType, tmdbId } = req.params;
+
+  if (!["movie", "tv"].includes(mediaType)) {
+    return res.status(400).json({
+      message: "Media type must be movie or tv."
+    });
+  }
+
+  try {
+    const response = await db.query("SELECT * FROM reviews WHERE tmdb_id = $1 AND media_type = $2",
+      [tmdbId, mediaType]
+    );
+    res.json(response.rows);
+  } catch (err) {
+    console.error("Error fetching reviews.", err);
+    res.status(500).json({
+      message: "Failed to fetch reviews."
+    });
+  }
+});
+
 // Account functionality
 
 app.post("/signup", async (req, res) => {
@@ -161,7 +262,7 @@ app.post("/signup", async (req, res) => {
     console.log("Created new user.");
     req.login(req.body.username, (err) => {
       if (err) {
-        console.log(err);
+        console.error(err);
         res.json({
           success: false,
           message: "Error logging in to new user."
@@ -173,7 +274,7 @@ app.post("/signup", async (req, res) => {
       })
     })
   } catch (err) {
-    console.log("Username already in use, please use a different one.");
+    console.error("Username already in use, please use a different one.");
     res.json({
       success: false,
       message: "Username already in use, please use a different one."
@@ -192,7 +293,7 @@ app.post("/login", function(req, res, next) {
     }
     req.login(user, (err) => {
       if (err) {
-        console.log(err);
+        console.error(err);
         return res.json({
           success: false,
           message: "Error logging in."
@@ -219,19 +320,19 @@ app.get("/session", async (req, res) => {
 passport.use(
   new Strategy(async function verify(username, password, cb) {
     try {
-      const result = await db.query("SELECT password FROM users WHERE user_id = ($1)",
+      const response = await db.query("SELECT password FROM users WHERE user_id = ($1)",
         [username]
       );
-      if (result.rows.length > 0) {
-        const hashedPassword = result.rows[0].password;
+      if (response.rows.length > 0) {
+        const hashedPassword = response.rows[0].password;
         if (await argon2.verify(hashedPassword, password)) {
           return cb(null, username);
         } else {
-          console.log("Password incorrect.");
+          console.error("Password incorrect.");
           return cb(null, false)
         }
       } else {
-        console.log("No user found.");
+        console.error("No user found.");
         return cb(null, false);
       }
     } catch(err) {
